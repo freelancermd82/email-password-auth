@@ -15,17 +15,32 @@ const Register = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         setSuccess('');
+        setError('');
         const email = event.target.email.value;
         const password = event.target.password.value;
         //  console.log(event.target.email.value)
         console.log(email, password);
+        // validate
+        if(!/(?=.*[A-Z])/.test(password)){
+            setError('Please add at least one uppercase')
+            return;
+        }
+        else if(!/(?=.*[0-9])/.test(password)){
+            setError('The password must be contain a single digit from 1 to 9');
+            return;
+        }
+        else if(/!(?=.*[a-z])/.test(password)){
+            setError('The password must be contain one lowercase letter')
+        }
+
+        // create user in firebase
         createUserWithEmailAndPassword(auth, email, password)
         .then(result => {
             const loggedUser = result.user;
             console.log(loggedUser);
             setError('');
             event.target.reset();
-            setSuccess('User has created successfully');
+            setSuccess('User has been created successfully');
 
         })
         .catch(error => {

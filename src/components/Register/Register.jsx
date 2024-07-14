@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from "firebase/auth";
 import app from '../../firebase/firebase.config';
+import { Link } from 'react-router-dom';
 
 
 
@@ -29,7 +30,7 @@ const Register = () => {
             setError('The password must be contain a single digit from 1 to 9');
             return;
         }
-        else if(/!(?=.*[a-z])/.test(password)){
+        else if(!/(?=.*[a-z])/.test(password)){
             setError('The password must be contain one lowercase letter')
         }
 
@@ -41,12 +42,21 @@ const Register = () => {
             setError('');
             event.target.reset();
             setSuccess('User has been created successfully');
+            sendVerificationEmail(result.user);
 
         })
         .catch(error => {
             console.error(error.message);
             setError(error.message)
            
+        })
+    }
+
+    const sendVerificationEmail = (user) => {
+        sendEmailVerification(user)
+        .then(result => {
+            console.log(result);
+            alert('Please verify your email address');
         })
     }
 
@@ -72,6 +82,7 @@ const Register = () => {
                 <br />
                 <input className='btn btn-primary' type="submit" value="Register" />
             </form>
+            <p><small>Already have an account? Please <Link to="/login">Login</Link></small></p>
             <p className='text-danger'>{error}</p>
             <p className='text-success'>{success}</p>
         </div>
